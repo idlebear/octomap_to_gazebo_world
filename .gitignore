@@ -1,0 +1,10 @@
+
+build/atomic_configure/
+
+build/catkin_generated/
+
+build/
+
+c\+\+/\.idea/
+
+c\+\+/cmake-build-debug/

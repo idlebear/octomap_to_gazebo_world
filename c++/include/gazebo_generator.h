@@ -3,49 +3,52 @@
 //
 
 #include <boost/format.hpp>
+#include <fstream>
 #include <iostream>
+#include <string>
 
 #include "VisibilityPolygon.h"
 
 namespace V = Visibility;
+using namespace std;
 
 namespace GazeboGen {
 
     class World {
     public:
-        World( string dest ) {
-            string contFileName = dest + '.cnt';
-            contourFile.open( contFileName.c_str(), ios::out | ios::ate | ios::trunc );
-            string gazeboFileName = dest + '.world';
-            gazeboFile.open( worldFileName.c_str(), ios::out | ios::ate | ios::trunc );
-
-            writeHeader();
+        World( const string& gazeboDest, const string& contourDest ) : contourFile("foo"), gazeboFile("gazebo") {
+            contourFileName = contourDest + ".dat";
+            gazeboFileName = gazeboDest + ".world";
         };
 
         ~World() {
+        }
+
+        void
+        writeToDatFile( const V::Polygon& poly, double scale = 1 ) {
+            // TODO: Polygons are only writing their exterior ring here -- should clean this up to add any
+            //  holes that are included (need to know the proper format for gazebo...)
+            auto points = V::convertToExteriorPoints( poly );
+            contourFile << points.size() << std::endl;
+            for( auto const& pt : points ) {
+                // TODO: implement scaling here (was commented out)
+                contourFile << pt.x() << " " << pt.y() << std::endl;
+            }
+        }
+
+        void
+        write( vector<V::Polygon> polygons, double height, double width ) {
+            gazeboFile = ofstream( gazeboFileName.c_str(), ios::out | ios::ate | ios::trunc );
+            contourFile = ofstream( contourFileName.c_str(), ios::out | ios::ate | ios::trunc );
+            writeHeader( height, width );
+            int wallNum = 0;
+            for( auto const& poly: polygons ) {
+                writeToDatFile( poly, 1 );
+                writeToWorldFile( wallNum, poly, 1 );
+            }
             writeFooter();
             gazeboFile.close();
             contourFile.close();
-        }
-
-        writeToDatFile( V::Polygon poly, double scale ) {
-            // TODO: Polygons are only writing their exterior ring here -- should clean this up to add any
-            //  holes that are included (need to know the proper format for gazebo...)
-            auto points = V::convertToPoints( poly );
-            contourFile << points.size() << "\n";
-            for( auto const& pt : points ) {
-                // TODO: implement scaling here (was commented out)
-                contourFile << pt.x() << " " << pt.y() << "\n";
-            }
-        }
-
-        write( vector<V::Polygon> polygons ) {
-            writeSvnHeaders();
-            wallNum = 0;
-            for( auto const& poly: polygons ) {
-                writeToDatFile( poly );
-                writeToWorldFile( poly, wallNum );
-            }
         }
 
 
@@ -168,7 +171,7 @@ namespace GazeboGen {
         </model>)";
 
         void
-        writeHeader() {
+        writeHeader( double height, double width ) {
             auto formattedHeader = boost::format( header ) % height % width;
             gazeboFile << formattedHeader << endl;
         }
@@ -184,7 +187,7 @@ namespace GazeboGen {
         };
 
         void
-        writeWall( V::Segment segment, double scale, int wallNum ) {
+        writeWall( V::Segment segment, int wallNum, double scale = 1 ) {
             auto x1 = segment.first.x() * scale;
             auto y1 = segment.first.y() * scale;
 
@@ -192,31 +195,30 @@ namespace GazeboGen {
             auto y2 = segment.second.x() * scale;
 
             V::Point midp = mid( segment );
-            mid_x = midp.x();
-            mid_y = midp.y();
 
-            dir = V::angle(segment.first, segment.second);
-            len = V::length( segment );
-
-            auto width = 0.2;
-            auto height = 2.5;
-            auto wallDesc = boost::format( wallTemplate ) % index % len % width % height % midp.x() % midp.y()
-                    % dir;
+            auto wallWidth = 0.2;
+            auto wallHeight = 2.5;
+            auto wallDesc = boost::format( wallTemplate ) % wallNum % V::length( segment ) % wallWidth % wallHeight % midp.x() % midp.y()
+                    % V::angle(segment.first, segment.second);
             gazeboFile << wallDesc << endl;
         };
 
 
-        void writeToWorldFile( V::Polygon poly, double scale, int& wallNum) {
+        void
+        writeToWorldFile( int& wallNum, V::Polygon poly, double scale = 1) {
             auto segments = V::convertToSegments( poly );
             for( auto const& segment: segments ) {
-                writeWall( segment, scale, wallNum );
+                writeWall( segment, wallNum, scale );
                 wallNum++;
             }
         }
 
     private:
-        ostream contourFile;
-        ostream gazeboFile;
+        string contourFileName;
+        string gazeboFileName;
+
+        ofstream contourFile;
+        ofstream gazeboFile;
 
     };
 }
