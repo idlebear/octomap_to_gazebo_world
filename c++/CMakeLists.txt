@@ -6,6 +6,7 @@ add_compile_options(-std=c++11)
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
+find_package(Boost REQUIRED COMPONENTS format)
 
 ###########
 ## Build ##
@@ -15,6 +16,7 @@ add_compile_options(-std=c++11)
 ## Your package locations should be listed before other locations
 include_directories(
         include
+        {BOOST_INCLUDE_DIRS}
 )
 
 SET(visibility-polygon_LIBRARY_OUTPUT_DIRECTORY ${visibility-polygon_SOURCE_DIR}/lib CACHE PATH "Target for the libraries")
@@ -29,6 +31,7 @@ add_library(${PROJECT_NAME} SHARED
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(${PROJECT_NAME}
+        ${BOOST_LIBRARIES}
         )
 
 #############
