@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(gg)
+project(gazeboGen)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
 add_compile_options(-std=c++11)
@@ -8,22 +8,22 @@ add_compile_options(-std=c++11)
 # find_package(Boost REQUIRED COMPONENTS system)
 find_package(Boost REQUIRED)
 
-find_package(catkin REQUIRED COMPONENTS roscpp )
-###################################
-## catkin specific configuration ##
-###################################
-## The catkin_package macro generates cmake config files for your package
-## Declare things to be passed to dependent projects
-## INCLUDE_DIRS: uncomment this if your package contains header files
-## LIBRARIES: libraries you create in this project that dependent projects also need
-## CATKIN_DEPENDS: catkin_packages dependent projects also need
-## DEPENDS: system dependencies of this project that dependent projects also need
-catkin_package(
-        #  INCLUDE_DIRS include
-        #  LIBRARIES random
-        #  CATKIN_DEPENDS other_catkin_pkg
-        #  DEPENDS system_lib
-)
+#find_package(catkin REQUIRED COMPONENTS roscpp )
+####################################
+### catkin specific configuration ##
+####################################
+### The catkin_package macro generates cmake config files for your package
+### Declare things to be passed to dependent projects
+### INCLUDE_DIRS: uncomment this if your package contains header files
+### LIBRARIES: libraries you create in this project that dependent projects also need
+### CATKIN_DEPENDS: catkin_packages dependent projects also need
+### DEPENDS: system dependencies of this project that dependent projects also need
+#catkin_package(
+#        #  INCLUDE_DIRS include
+#        #  LIBRARIES random
+#        #  CATKIN_DEPENDS other_catkin_pkg
+#        #  DEPENDS system_lib
+#)
 
 
 ###########
@@ -34,22 +34,20 @@ catkin_package(
 ## Your package locations should be listed before other locations
 include_directories(
         include
-        ../../visibility-polygon/include
-        ${catkin_INCLUDE_DIRS}
         {BOOST_INCLUDE_DIRS}
 )
 
-SET(visibility-polygon_LIBRARY_OUTPUT_DIRECTORY ${visibility-polygon_SOURCE_DIR}/lib CACHE PATH "Target for the libraries")
-SET(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${visibility-polygon_LIBRARY_OUTPUT_DIRECTORY})
-SET(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${visibility-polygon_LIBRARY_OUTPUT_DIRECTORY})
-SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${visibility-polygon_RUNTIME_OUTPUT_DIRECTORY})
+SET(gazeboGen_LIBRARY_OUTPUT_DIRECTORY ${gazeboGen_SOURCE_DIR}/lib CACHE PATH "Target for the libraries")
+SET(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${gazeboGeng_LIBRARY_OUTPUT_DIRECTORY})
+SET(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${gazeboGen_LIBRARY_OUTPUT_DIRECTORY})
+SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${gazeboGen_RUNTIME_OUTPUT_DIRECTORY})
 
 set(srcs
         src/gazebo_generator.cpp
         )
 
 ## Declare a C++ executable
-add_executable(${PROJECT_NAME}test src/main.cpp  )
+#add_executable( ${PROJECT_NAME} foo.cpp )
 
 
 ## Declare a C++ library
@@ -61,9 +59,6 @@ add_library(${PROJECT_NAME} SHARED
 ## Specify libraries to link a library or executable target against
 target_link_libraries(${PROJECT_NAME}
         ${BOOST_LIBRARIES}
-        ${catkin_LIBRARIES}
-        /home/bjgilhul/catkin_ws/obstacle_planner/ob1/thirdParty/visibility-polygon/lib/libvisibility-polygon.so
-        ${PROJECT_NAME}
         )
 
 #############
@@ -84,7 +79,7 @@ target_link_libraries(${PROJECT_NAME}
 install(TARGETS ${PROJECT_NAME}
         #   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
         LIBRARY DESTINATION lib
-        RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+#        RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
         )
 
 ## Mark cpp header files for installation

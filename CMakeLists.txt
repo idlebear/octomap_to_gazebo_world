@@ -5,6 +5,7 @@ find_package(catkin REQUIRED
     actionlib
 )
 
+add_subdirectory( c++ )
 
 #Prepare the catkin_package
 catkin_package(
