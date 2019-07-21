@@ -1,6 +1,19 @@
 # octomap_to_gazebo_world
 
+
 # C++ Library
+Given a list of polygons (organized as segments -- see the sample), output a basic gazebo world file.
+
+The C++ library (it's only one function really, library is being a little generous...) is straightforward to build:
+
+    > cd c++
+    > mkdir build && cd build
+    > cmake ..
+    > make 
+
+A quick and dirty sample can be built from main.cpp (once you've build the library):
+
+    > c++ src/main.cpp -I./include -L./lib -l gazeboGen -o gg
 
 
 #Installation
@@ -18,3 +31,5 @@ Examples are provided in the Maps folder.
 Then just run roslaunch octomap_to_gazebo generate_world_and_contours.launch to create the .world file and a .dat file containign the raw contours
 To view the world in Gazebo run:
 roslaunch octomap_to_gazebo launch_gazebo_world.launch world:=(name of world file).world
+
+

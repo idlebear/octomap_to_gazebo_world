@@ -183,7 +183,7 @@ namespace gazebo_generator {
 
     void
     GazeboGenerator::writeHeader( double scale ) {
-        auto formattedHeader = boost::format( header ) % (height * scale) % (width * scale);
+        auto formattedHeader = boost::format( header ) % worldName % (height * scale) % (width * scale);
         gazeboFile << formattedHeader << std::endl;
     }
 
@@ -213,8 +213,9 @@ namespace gazebo_generator {
     GazeboGenerator::writeWall( const Segment& segment, int wallNum, double scale ) {
         Point midp = mid( segment );
 
-        auto wallDesc = boost::format( wallTemplate ) % wallNum % (length( segment ) * scale) % (wallWidth * scale)
-                % (wallHeight * scale) % (midp.first * scale) % (midp.second * scale)
+        auto wallDesc = boost::format( wallTemplate ) % wallNum
+                % (length( segment ) * scale) % (wallWidth * scale) % (wallHeight * scale)
+                % (midp.first * scale) % (midp.second * scale) % (wallHeight * scale / 2.0)
                 % angle(segment.first, segment.second);
         gazeboFile << wallDesc << std::endl;
     };
