@@ -16,9 +16,12 @@ namespace gazebo_generator {
 
     class GazeboGenerator {
     public:
-        GazeboGenerator( const std::string& gazeboDest, const std::string& contourDest, double height, double width,
-                double wallHeight = 2.5, double wallWidth = 0.2 ) :
-            contourFileName(contourDest), gazeboFileName(gazeboDest), height(height), width(width),
+        GazeboGenerator( const std::string& gazeboDest, const std::string& contourDest,
+                double height, double width,
+                double wallHeight = 2.5, double wallWidth = 0.2,
+                const std::string& worldName = "default" ) :
+            contourFileName(contourDest), gazeboFileName(gazeboDest),
+            worldName( worldName ), height(height), width(width),
             wallHeight(wallHeight), wallWidth(wallWidth) {
         };
         ~GazeboGenerator() = default;
@@ -57,6 +60,7 @@ namespace gazebo_generator {
 
 
     private:
+        std::string worldName;
         double height, width;
         double wallHeight, wallWidth;
 
