@@ -6,6 +6,8 @@
 
 namespace gazebo_generator {
 
+    const double basePlateMultiple = 4.0;
+
     void
     GazeboGenerator::write( double scale ) {
         gazeboFile = std::ofstream( gazeboFileName.c_str(), std::ios::out | std::ios::ate | std::ios::trunc );
@@ -183,7 +185,8 @@ namespace gazebo_generator {
 
     void
     GazeboGenerator::writeHeader( double scale ) {
-        auto formattedHeader = boost::format( header ) % worldName % (height * scale) % (width * scale);
+        auto formattedHeader = boost::format( header ) % worldName % (height * scale * basePlateMultiple)
+                % (width * scale * basePlateMultiple);
         gazeboFile << formattedHeader << std::endl;
     }
 
