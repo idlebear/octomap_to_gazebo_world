@@ -16,14 +16,15 @@ namespace gazebo_generator {
 
     class GazeboGenerator {
     public:
-        GazeboGenerator( const std::string& gazeboDest, const std::string& contourDest,
+        GazeboGenerator( const std::string& gazeboDest,
                 double height, double width,
                 double wallHeight = 2.5, double wallWidth = 0.2,
                 const std::string& worldName = "default" ) :
-            contourFileName(contourDest), gazeboFileName(gazeboDest),
-            worldName( worldName ), height(height), width(width),
-            wallHeight(wallHeight), wallWidth(wallWidth) {
-        };
+            worldName( worldName ),
+            height(height), width(width),
+            wallHeight(wallHeight),
+            wallWidth(wallWidth),
+            gazeboFileName(gazeboDest) {};
         ~GazeboGenerator() = default;
 
         void
@@ -58,6 +59,27 @@ namespace gazebo_generator {
             return sqrt( dx * dx + dy * dy );
         }
 
+        const double mapOccupiedThreshold = 0.65;
+        const double mapFreeThreshold = 0.2;
+        const int negateMap = 0;
+        const double mapOriginX = 0;
+        const double mapOriginY = 0;
+        const double mapOriginZ = 0;
+        const double mapResolution = 1;
+
+        inline void
+        writeYAML() {
+            auto  yamlFile = std::ofstream( gazeboFileName + ".yaml", std::ios::out | std::ios::ate | std::ios::trunc );
+            yamlFile << "image: " << gazeboFileName << ".pgm" << std::endl;
+            yamlFile << "resolution: " << mapResolution << std::endl;
+            yamlFile << "origin: [" << mapOriginX << ", " << mapOriginY << ", "  << mapOriginZ << " ]" << std::endl;
+            yamlFile << "negate: " << std::to_string(negateMap) << std::endl;
+            yamlFile << "occupied_thresh: " << mapOccupiedThreshold << std::endl;
+            yamlFile << "free_thresh: " << mapFreeThreshold << std::endl;
+            yamlFile << std::endl;
+            yamlFile.close();
+        }
+
 
     private:
         std::string worldName;
@@ -69,7 +91,6 @@ namespace gazebo_generator {
 
         std::vector<Polygon> polygons;
 
-        std::ofstream contourFile;
         std::ofstream gazeboFile;
     };
 }

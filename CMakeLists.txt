@@ -10,7 +10,7 @@ message( "BUILDING SUB" )
 # find_package(Boost REQUIRED COMPONENTS system)
 find_package(Boost REQUIRED)
 
-#find_package(catkin REQUIRED )
+find_package(catkin REQUIRED )
 ####################################
 ### catkin specific configuration ##
 ####################################

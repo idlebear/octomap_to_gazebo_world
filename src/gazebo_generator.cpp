@@ -10,8 +10,7 @@ namespace gazebo_generator {
 
     void
     GazeboGenerator::write( double scale ) {
-        gazeboFile = std::ofstream( gazeboFileName.c_str(), std::ios::out | std::ios::ate | std::ios::trunc );
-        contourFile = std::ofstream( contourFileName.c_str(), std::ios::out | std::ios::ate | std::ios::trunc );
+        gazeboFile = std::ofstream( gazeboFileName + ".world", std::ios::out | std::ios::ate | std::ios::trunc );
         writeHeader( scale );
         int wallNum = 0;
         for( auto const& poly: polygons ) {
@@ -20,7 +19,8 @@ namespace gazebo_generator {
         }
         writeFooter();
         gazeboFile.close();
-        contourFile.close();
+
+        writeYAML();
     }
 
     const char *header = R"(
@@ -197,11 +197,11 @@ namespace gazebo_generator {
 
     void
     GazeboGenerator::writeToDatFile( const Polygon& poly, double scale ) {
-        contourFile << poly.size() << std::endl;
-        for( auto const& segment : poly ) {
-            // TODO: implement scaling here (was commented out)
-            contourFile << segment.first.first * scale << " " << segment.first.second * scale << std::endl;
-        }
+//        contourFile << poly.size() << std::endl;
+//        for( auto const& segment : poly ) {
+//            // TODO: implement scaling here (was commented out)
+//            contourFile << segment.first.first * scale << " " << segment.first.second * scale << std::endl;
+//        }
     }
 
     void
