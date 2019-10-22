@@ -33,14 +33,18 @@ namespace gazebo_generator {
         }
 
         void
+        addPylon( const Point& p ) {
+            pylons.emplace_back( p );
+        }
+
+        void
         write( double scale = 1 );
 
     protected:
         void writeHeader( double scale );
         void writeFooter();
-        void writeToDatFile( const Polygon& poly, double scale );
-        void writeToWorldFile( int& wallNum, Polygon poly, double scale );
-        void writeWall( const Segment& segment, int wallNum, double scale );
+        void writeWallToWorldFile( int& wallNum, Polygon poly, double scale );
+        void writePylonToWorldFile( int pylonNum, double x, double y, double scale );
 
         inline Point
         mid( const Segment& segment ) const {
@@ -90,6 +94,7 @@ namespace gazebo_generator {
         std::string gazeboFileName;
 
         std::vector<Polygon> polygons;
+        std::vector<Point> pylons;
 
         std::ofstream gazeboFile;
     };

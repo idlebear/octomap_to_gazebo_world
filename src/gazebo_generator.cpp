@@ -14,8 +14,12 @@ namespace gazebo_generator {
         writeHeader( scale );
         int wallNum = 0;
         for( auto const& poly: polygons ) {
-            writeToDatFile( poly, scale );
-            writeToWorldFile( wallNum, poly, scale );
+            writeWallToWorldFile( wallNum, poly, scale );
+        }
+        int pylonNum = 0;
+        for( auto const& p: pylons ) {
+            writePylonToWorldFile( pylonNum, p.first, p.second, scale );
+            pylonNum++;
         }
         writeFooter();
         gazeboFile.close();
@@ -183,6 +187,58 @@ namespace gazebo_generator {
 
 )";
 
+    const char* pylonTemplate = R"(
+        <model name='Construction Cone_%1%'>
+            <static>0</static>
+            <link name='link'>
+                <collision name='collision'>
+                    <geometry>
+                        <mesh>
+                            <scale>1 1 1</scale>
+                            <uri>model://construction_cone/meshes/construction_cone.dae</uri>
+                        </mesh>
+                    </geometry>
+                    <max_contacts>10</max_contacts>
+                    <surface>
+                        <contact>
+                            <ode/>
+                        </contact>
+                        <bounce/>
+                        <friction>
+                            <torsional>
+                                <ode/>
+                            </torsional>
+                            <ode/>
+                        </friction>
+                    </surface>
+                </collision>
+                <visual name='CC_%1%'>
+                    <geometry>
+                        <mesh>
+                        <scale>1 1 1</scale>
+                        <uri>model://construction_cone/meshes/construction_cone.dae</uri>
+                        </mesh>
+                    </geometry>
+                </visual>
+                <self_collide>0</self_collide>
+                <inertial>
+                    <inertia>
+                        <ixx>1</ixx>
+                        <ixy>0</ixy>
+                        <ixz>0</ixz>
+                        <iyy>1</iyy>
+                        <iyz>0</iyz>
+                        <izz>1</izz>
+                    </inertia>
+                    <mass>1</mass>
+                </inertial>
+                <enable_wind>0</enable_wind>
+                <kinematic>0</kinematic>
+            </link>
+            <pose frame=''>%2% %3% 0 0 -0 0</pose>
+        </model>
+)";
+
     void
     GazeboGenerator::writeHeader( double scale ) {
         auto formattedHeader = boost::format( header ) % worldName % (height * scale * basePlateMultiple)
@@ -196,31 +252,24 @@ namespace gazebo_generator {
     }
 
     void
-    GazeboGenerator::writeToDatFile( const Polygon& poly, double scale ) {
-//        contourFile << poly.size() << std::endl;
-//        for( auto const& segment : poly ) {
-//            // TODO: implement scaling here (was commented out)
-//            contourFile << segment.first.first * scale << " " << segment.first.second * scale << std::endl;
-//        }
-    }
-
-    void
-    GazeboGenerator::writeToWorldFile( int& wallNum, Polygon poly, double scale ) {
+    GazeboGenerator::writeWallToWorldFile( int& wallNum, Polygon poly, double scale ) {
         for( auto const& segment: poly ) {
-            writeWall( segment, wallNum, scale );
+            Point midp = mid( segment );
+
+            auto wallDesc = boost::format( wallTemplate ) % wallNum
+                            % (length( segment ) * scale) % (wallWidth * scale) % (wallHeight * scale)
+                            % (midp.first * scale) % (midp.second * scale) % (wallHeight * scale / 2.0)
+                            % angle(segment.first, segment.second);
+            gazeboFile << wallDesc << std::endl;
+
             wallNum++;
         }
     }
 
+
     void
-    GazeboGenerator::writeWall( const Segment& segment, int wallNum, double scale ) {
-        Point midp = mid( segment );
-
-        auto wallDesc = boost::format( wallTemplate ) % wallNum
-                % (length( segment ) * scale) % (wallWidth * scale) % (wallHeight * scale)
-                % (midp.first * scale) % (midp.second * scale) % (wallHeight * scale / 2.0)
-                % angle(segment.first, segment.second);
-        gazeboFile << wallDesc << std::endl;
-    };
-
+    GazeboGenerator::writePylonToWorldFile(int pylonNum, double x, double y, double scale) {
+        auto pylonDesc = boost::format( pylonTemplate ) % pylonNum % x % y;
+        gazeboFile << pylonDesc << std::endl;
+    }
 }
