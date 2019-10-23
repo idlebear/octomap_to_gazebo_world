@@ -45,6 +45,12 @@ namespace gazebo_generator {
         <direction>-0.5 0.1 -0.9</direction>
     </light>
 
+
+    <!-- Only one ROS interface plugin is required per world, as any other plugin can connect a Gazebo
+         topic to a ROS topic (or vise versa). -->
+    <plugin name="ros_interface_plugin" filename="librotors_gazebo_ros_interface_plugin.so"/>
+
+
     <model name='ground_plane'>
         <static>1</static>
         <link name='link'>
